@@ -13,11 +13,12 @@
     --sunny-yellow: #f1c40f;
     --pure-white: #ffffff;
     --practice-orange: #f39c12; /* A suitable orange for the test button */
+    --new-background: #4a90e2; /* New, softer blue from the design */
 }
 
 body {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    background-color: var(--bright-blue);
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--new-background);
     color: var(--pure-white);
     display: flex;
     justify-content: center;
@@ -101,7 +102,7 @@ header h1 {
     margin: 15px auto;
     padding: 20px;
     font-size: 28px;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Poppins', sans-serif;
     border: none;
     border-radius: 15px;
     color: var(--pure-white);
@@ -166,7 +167,7 @@ header h1 {
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-weight: bold;
 }
 
@@ -220,7 +221,7 @@ header h1 {
     color: var(--pure-white);
     border-radius: 10px;
     margin-right: 10px;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 #backspace-btn {
@@ -232,6 +233,8 @@ header h1 {
     background-color: var(--warm-red);
     color: var(--pure-white);
     cursor: pointer;
+    margin-left: 10px;
+    font-family: 'Poppins', sans-serif;
 }
 
 #submit-btn {
@@ -244,7 +247,7 @@ header h1 {
     color: var(--pure-white);
     cursor: pointer;
     margin-left: 10px;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 #submit-btn:disabled {
@@ -268,7 +271,7 @@ header h1 {
     border-radius: 10px;
     border: none;
     font-size: 20px;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'Poppins', sans-serif;
     cursor: pointer;
     display: flex;
     justify-content: center;
