@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Spelling Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <h1>Interactive Spelling Game</h1>
+        </header>
+        <main id="main-menu">
+            <section id="avatar-selection">
+                <h2>Select Your Avatar</h2>
+                <div class="avatar-grid">
+                    <div class="avatar-option" data-avatar="mrbeast">
+                        <img src="images/avatars/mrbeast.jpg" alt="Mr Beast Avatar">
+                        <span>Mr Beast</span>
+                    </div>
+                    <div class="avatar-option" data-avatar="liverpool">
+                        <img src="images/avatars/liverpool.png" alt="Liverpool FC Avatar">
+                        <span>Liverpool FC</span>
+                    </div>
+                    <div class="avatar-option" data-avatar="arsenal">
+                        <img src="images/avatars/arsenal.png" alt="Arsenal FC Avatar">
+                        <span>Arsenal FC</span>
+                    </div>
+                    <div class="avatar-option" data-avatar="ronaldo">
+                        <img src="images/avatars/ronaldo.png" alt="Cristiano Ronaldo Avatar">
+                        <span>Ronaldo</span>
+                    </div>
+                </div>
+            </section>
+            <section id="game-modes">
+                <button id="practice-mode" class="mode-button" disabled>Practice Mode</button>
+                <button id="test-mode" class="mode-button" disabled>Test Mode</button>
+            </section>
+        </main>
+
+        <section id="game-screen" class="hidden">
+            <div id="progress-bar">
+                <div id="track">
+                    <div id="racing-car">
+                        <!-- Avatar image will go here -->
+                    </div>
+                    <div class="track-segment start"></div>
+                    <div class="track-segment forest"></div>
+                    <div class="track-segment city"></div>
+                    <div class="track-segment mountain"></div>
+                    <div class="track-segment finish"></div>
+                </div>
+            </div>
+            <div id="word-display-area">
+                <!-- The sentence with a blank will be displayed here -->
+            </div>
+            <div id="game-controls">
+                <button id="word-replay-btn">🔊 Word</button>
+                <button id="sentence-replay-btn">🔊 Sentence</button>
+            </div>
+            <div id="feedback-area"></div>
+            <div id="input-area">
+                <input type="text" id="spell-input" readonly>
+                <button id="backspace-btn">⌫</button>
+                <button id="submit-btn">Submit</button>
+            </div>
+            <div id="on-screen-keyboard">
+                <!-- Keyboard will be generated here -->
+            </div>
+            <div id="score-display">
+                Score: <span id="score-value">0</span>
+            </div>
+            <div id="timer-display"></div>
+        </section>
+
+        <section id="results-screen" class="hidden">
+            <h2>Game Over!</h2>
+            <h3>Final Score: <span id="final-score">0</span></h3>
+            <div id="results-container">
+                <h4>Your Results:</h4>
+                <ul id="results-list"></ul>
+            </div>
+            <button id="play-again-btn" class="mode-button">Play Again</button>
+            <button id="main-menu-btn" class="mode-button">Back to Menu</button>
+        </section>
+
+    </div>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/audio.js"></script>
+</body>
+</html> 
