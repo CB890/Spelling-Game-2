@@ -5,6 +5,8 @@ class AudioController {
         this.synth = window.speechSynthesis;
         this.voices = [];
         this.selectedVoice = null;
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
         this.loadVoices();
 
         if (this.synth.onvoiceschanged !== undefined) {
@@ -74,17 +76,45 @@ class AudioController {
         this.speak(textToSpeak);
     }
 
+    playSfx(type) {
+        if (!this.audioContext) return;
+
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.01); // Quick fade in
+
+        if (type === 'success') {
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, this.audioContext.currentTime + 0.1);
+        } else if (type === 'error') {
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(400, this.audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.1);
+        } else {
+            return; // Unknown type
+        }
+
+        oscillator.start(this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + 0.2);
+        oscillator.stop(this.audioContext.currentTime + 0.2);
+    }
+
     playEffect(effectName) {
-        const effects = {
-            success: "Great job!",
-            error: "Almost, try again!"
-        };
-        this.speak(effects[effectName]);
+        this.playSfx(effectName);
     }
 
     unlockAudio() {
         // This is a common trick to enable audio on iOS and some other browsers.
         // A silent utterance is spoken on the first user interaction.
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
         if (this.synth && !this.synth.speaking) {
             const silentUtterance = new SpeechSynthesisUtterance("");
             this.synth.speak(silentUtterance);

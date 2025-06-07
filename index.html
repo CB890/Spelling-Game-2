@@ -42,7 +42,17 @@
             </section>
         </main>
 
+        <div id="reward-toast" class="hidden">
+            <p>New Reward Unlocked!</p>
+            <span id="unlocked-reward-icon"></span>
+        </div>
+
         <section id="game-screen" class="hidden">
+            <div id="game-header">
+                <div id="score-display">Score: <span id="score-value">0</span></div>
+                <button id="home-btn" class="game-action-btn">🏠 Home</button>
+                <div id="timer-display"></div>
+            </div>
             <div id="progress-bar">
                 <div id="track">
                     <div id="racing-car">
@@ -66,15 +76,13 @@
             <div id="input-area">
                 <input type="text" id="spell-input" readonly>
                 <button id="backspace-btn">⌫</button>
+                <button id="hint-btn">Hint</button>
                 <button id="submit-btn">Submit</button>
             </div>
             <div id="on-screen-keyboard">
                 <!-- Keyboard will be generated here -->
             </div>
-            <div id="score-display">
-                Score: <span id="score-value">0</span>
-            </div>
-            <div id="timer-display"></div>
+            <div id="celebration-container"></div>
         </section>
 
         <section id="results-screen" class="hidden">
@@ -84,8 +92,17 @@
                 <h4>Your Results:</h4>
                 <ul id="results-list"></ul>
             </div>
+            <button id="view-rewards-btn" class="mode-button">View Rewards</button>
             <button id="play-again-btn" class="mode-button">Play Again</button>
             <button id="main-menu-btn" class="mode-button">Back to Menu</button>
+        </section>
+
+        <section id="rewards-screen" class="hidden">
+            <h2>Your Rewards</h2>
+            <div id="rewards-grid">
+                <!-- Rewards will be populated here -->
+            </div>
+            <button id="back-to-results-btn" class="mode-button">Back to Results</button>
         </section>
 
     </div>

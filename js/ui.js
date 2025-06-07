@@ -22,6 +22,16 @@ class UIController {
         this.car = document.getElementById('racing-car');
         this.wordReplayBtn = document.getElementById('word-replay-btn');
         this.sentenceReplayBtn = document.getElementById('sentence-replay-btn');
+        this.hintBtn = document.getElementById('hint-btn');
+        this.celebrationContainer = document.getElementById('celebration-container');
+        // Rewards UI
+        this.rewardToast = document.getElementById('reward-toast');
+        this.unlockedRewardIcon = document.getElementById('unlocked-reward-icon');
+        this.rewardsScreen = document.getElementById('rewards-screen');
+        this.rewardsGrid = document.getElementById('rewards-grid');
+        this.viewRewardsBtn = document.getElementById('view-rewards-btn');
+        this.backToResultsBtn = document.getElementById('back-to-results-btn');
+        this.homeBtn = document.getElementById('home-btn');
         this.onKeyPress = null; // Callback for key presses
         this.onSubmitCallback = null;
         this.onAvatarSelectCallback = null;
@@ -31,6 +41,8 @@ class UIController {
         this.onSentenceReplayCallback = null;
         this.onPlayAgainCallback = null;
         this.onBackToMenuCallback = null;
+        this.onHintCallback = null;
+        this.onGoHomeCallback = null;
 
         this.initKeyboard();
         this.backspaceBtn.addEventListener('click', () => this.handleBackspace());
@@ -40,6 +52,13 @@ class UIController {
         document.addEventListener('keydown', (e) => this.handlePhysicalKeyboard(e));
         this.bindReplayButtons();
         this.bindResultsButtons();
+        this.bindRewardsButtons();
+        this.homeBtn.addEventListener('click', () => {
+            if (this.onGoHomeCallback) this.onGoHomeCallback();
+        });
+        this.hintBtn.addEventListener('click', () => {
+            if (this.onHintCallback) this.onHintCallback();
+        });
     }
 
     handlePhysicalKeyboard(e) {
@@ -145,6 +164,10 @@ class UIController {
         this.feedbackArea.textContent = message;
         this.feedbackArea.classList.add(isCorrect ? 'correct' : 'incorrect');
         this.inputField.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+        if (isCorrect) {
+            this.triggerCelebration();
+        }
 
         this.disableInput();
 
@@ -291,6 +314,14 @@ class UIController {
         this.onBackToMenuCallback = callback;
     }
 
+    onGoHome(callback) {
+        this.onGoHomeCallback = callback;
+    }
+
+    onHint(callback) {
+        this.onHintCallback = callback;
+    }
+
     setAvatarInCar(avatarId) {
         const extension = (avatarId === 'mrbeast') ? 'jpg' : 'png';
         this.car.innerHTML = `<img src="images/avatars/${avatarId}.${extension}" alt="Player Avatar">`;
@@ -329,5 +360,78 @@ class UIController {
         this.mainMenuBtn.addEventListener('click', () => {
             if (this.onBackToMenuCallback) this.onBackToMenuCallback();
         });
+    }
+
+    bindRewardsButtons() {
+        this.viewRewardsBtn.addEventListener('click', () => this.showRewardsScreen());
+        this.backToResultsBtn.addEventListener('click', () => this.hideRewardsScreen());
+    }
+
+    showHint(firstLetter) {
+        this.inputField.value = firstLetter;
+        this.hintBtn.disabled = true;
+        this.updateSubmitButtonState();
+    }
+
+    resetHintButton() {
+        this.hintBtn.disabled = false;
+    }
+
+    showRewardsScreen() {
+        this.resultsScreen.classList.add('hidden');
+        this.rewardsScreen.classList.remove('hidden');
+    }
+
+    hideRewardsScreen() {
+        this.rewardsScreen.classList.add('hidden');
+        this.resultsScreen.classList.remove('hidden');
+    }
+
+    displayRewards(rewards) {
+        this.rewardsGrid.innerHTML = '';
+        rewards.forEach(reward => {
+            const rewardEl = document.createElement('div');
+            rewardEl.classList.add('reward-item');
+            if (reward.unlocked) {
+                rewardEl.classList.add('unlocked');
+            }
+            rewardEl.innerHTML = `
+                <span class="reward-icon">${reward.icon}</span>
+                <span class="reward-name">${reward.name}</span>
+            `;
+            this.rewardsGrid.appendChild(rewardEl);
+        });
+    }
+
+    showRewardToast(reward) {
+        this.unlockedRewardIcon.textContent = reward.icon;
+        this.rewardToast.classList.remove('hidden');
+        // The toast will hide itself via animation, but we remove the element from the DOM flow after
+        setTimeout(() => {
+            this.rewardToast.classList.add('hidden');
+        }, 4000);
+    }
+
+    triggerCelebration() {
+        for (let i = 0; i < 30; i++) {
+            setTimeout(() => {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+
+                // Position sparkles randomly over the input area
+                const inputRect = this.inputField.getBoundingClientRect();
+                const containerRect = this.celebrationContainer.getBoundingClientRect();
+
+                sparkle.style.left = `${inputRect.left - containerRect.left + Math.random() * inputRect.width}px`;
+                sparkle.style.top = `${inputRect.top - containerRect.top + Math.random() * inputRect.height}px`;
+
+                this.celebrationContainer.appendChild(sparkle);
+
+                // Remove the sparkle after the animation finishes
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 1000);
+            }, i * 20);
+        }
     }
 } 

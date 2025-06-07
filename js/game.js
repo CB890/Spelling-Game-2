@@ -14,11 +14,23 @@ class SpellingGame {
         this.timeRemaining = 60;
         this.timerId = null;
         this.selectedAvatar = null;
+        this.hintUsed = false;
+        this.rewards = [
+            { id: 'perfect_score', name: 'Perfect Score', icon: '🏆', unlocked: false, condition: (game) => game.gameResults.every(r => r.isCorrect) && game.gameResults.length === game.words.length },
+            { id: 'first_word', name: 'First Word!', icon: '⭐', unlocked: false, condition: (game) => game.score > 0 },
+            { id: 'streak_3', name: '3 in a Row!', icon: '🔥', unlocked: false, condition: (game) => this.checkStreak(3, game) },
+            { id: 'quick_speller', name: 'Quick Speller', icon: '⚡', unlocked: false, condition: (game) => game.gameResults.some(r => r.isCorrect && r.timeBonus > 0) }
+        ];
+        this.correctStreak = 0;
     }
 
     setControllers(ui, audio) {
         this.uiController = ui;
         this.audioController = audio;
+    }
+
+    checkStreak(length, game) {
+        return game.correctStreak >= length;
     }
 
     /**
@@ -47,6 +59,8 @@ class SpellingGame {
         this.score = 0;
         this.gameResults = [];
         this.currentWordIndex = 0;
+        this.correctStreak = 0;
+        this.rewards.forEach(r => r.unlocked = false); // Reset rewards for new game
         this.shuffleWords();
         
         this.uiController.showGameScreen();
@@ -79,6 +93,8 @@ class SpellingGame {
     endGame() {
         this.stopTimer();
         console.log('Game over! Final score:', this.score);
+        this.checkEndGameRewards();
+        this.uiController.displayRewards(this.rewards);
         this.uiController.showResults(this.score, this.gameResults);
     }
 
@@ -94,25 +110,32 @@ class SpellingGame {
             this.stopTimer();
         }
 
-        this.gameResults.push({ word: currentWord, attempt: spellingAttempt, isCorrect: isCorrect });
-
+        let timeBonus = 0;
         if (isCorrect) {
+            this.correctStreak++;
             let points = (this.mode === 'test') ? 20 : 10;
-            if (this.mode === 'test') {
+            if (this.hintUsed) {
+                points = 0;
+            } else if (this.mode === 'test') {
                 if (this.timeRemaining >= 40) {
-                    points += 10;
+                    timeBonus = 10;
                 } else if (this.timeRemaining >= 20) {
-                    points += 5;
+                    timeBonus = 5;
                 }
+                points += timeBonus;
             }
             this.updateScore(points);
             this.audioController.playEffect('success');
             this.uiController.showFeedback("Great job!", true);
             this.uiController.updateCarPosition(this.currentWordIndex - 1);
         } else {
+            this.correctStreak = 0;
             this.audioController.playEffect('error');
             this.uiController.showFeedback(`The word was: ${currentWord}`, false);
         }
+
+        this.gameResults.push({ word: currentWord, attempt: spellingAttempt, isCorrect: isCorrect, timeBonus: timeBonus });
+        this.checkMidGameRewards();
 
         setTimeout(() => {
             this.proceedToNextWord();
@@ -134,6 +157,8 @@ class SpellingGame {
     proceedToNextWord() {
         const nextWord = this.getNextWord();
         if (nextWord) {
+            this.hintUsed = false;
+            this.uiController.resetHintButton();
             const sentence = this.audioController.getSentenceForWord(nextWord);
             const blankedSentence = sentence.replace(nextWord, '_______');
             this.uiController.displaySentence(blankedSentence);
@@ -161,6 +186,8 @@ class SpellingGame {
                     attempt: 'timeout',
                     isCorrect: false
                 });
+                this.correctStreak = 0;
+                this.checkMidGameRewards();
                 setTimeout(() => this.proceedToNextWord(), 2000);
             }
         }, 1000);
@@ -169,6 +196,15 @@ class SpellingGame {
     stopTimer() {
         clearInterval(this.timerId);
         this.timerId = null;
+    }
+
+    giveHint() {
+        this.hintUsed = true;
+        const currentWord = this.shuffledWords[this.currentWordIndex - 1];
+        if (currentWord) {
+            const firstLetter = currentWord.charAt(0);
+            this.uiController.showHint(firstLetter);
+        }
     }
 
     replayWord() {
@@ -183,6 +219,35 @@ class SpellingGame {
         if (currentWord) {
             this.audioController.playWord(currentWord, true);
         }
+    }
+
+    returnToMenu() {
+        this.stopTimer();
+        this.uiController.showMainMenu();
+    }
+
+    checkMidGameRewards() {
+        this.rewards.forEach(reward => {
+            if (!reward.unlocked && reward.condition(this)) {
+                if (reward.id !== 'perfect_score') { // Defer perfect score to end
+                    this.unlockReward(reward);
+                }
+            }
+        });
+    }
+
+    checkEndGameRewards() {
+        this.rewards.forEach(reward => {
+            if (!reward.unlocked && reward.condition(this)) {
+                this.unlockReward(reward);
+            }
+        });
+    }
+
+    unlockReward(reward) {
+        reward.unlocked = true;
+        this.uiController.showRewardToast(reward);
+        console.log(`Reward unlocked: ${reward.name}`);
     }
 }
 
@@ -206,8 +271,16 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.showMainMenu();
     });
 
+    ui.onGoHome(() => {
+        game.returnToMenu();
+    });
+
     ui.onAvatarSelect(avatarId => {
         game.setAvatar(avatarId);
+    });
+
+    ui.onHint(() => {
+        game.giveHint();
     });
 
     ui.onWordReplay(() => {

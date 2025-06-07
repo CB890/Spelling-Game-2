@@ -78,7 +78,7 @@ header h1 {
     box-shadow: 0 0 15px var(--vibrant-green);
 }
 
-.avatar-option:focus, .mode-button:focus, #word-replay-btn:focus, #sentence-replay-btn:focus, #backspace-btn:focus, #submit-btn:focus {
+.avatar-option:focus, .mode-button:focus, #word-replay-btn:focus, #sentence-replay-btn:focus, #backspace-btn:focus, #hint-btn:focus, #submit-btn:focus, #home-btn:focus {
     outline: 3px solid var(--sunny-yellow);
     outline-offset: 3px;
 }
@@ -221,6 +221,19 @@ header h1 {
     color: var(--pure-white);
     border-radius: 10px;
     margin-right: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+#hint-btn {
+    height: 60px;
+    padding: 0 20px;
+    font-size: 24px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--practice-orange);
+    color: var(--pure-white);
+    cursor: pointer;
+    margin-left: 10px;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -389,6 +402,8 @@ header h1 {
     padding: 10px 20px;
     border-radius: 15px;
     display: none; /* Hidden by default, shown only in test mode */
+    min-width: 150px;
+    text-align: right;
 }
 
 /* --- Racing Track --- */
@@ -529,7 +544,7 @@ header h1 {
         height: 50px;
         font-size: 24px;
     }
-    #backspace-btn {
+    #backspace-btn, #hint-btn {
         width: 50px;
         height: 50px;
         font-size: 24px;
@@ -550,7 +565,9 @@ header h1 {
     #timer-display {
         font-size: 24px;
         position: static;
-        margin-top: 15px;
+        margin-top: 0;
+        min-width: unset;
+        text-align: center;
     }
     #track {
         height: 40px;
@@ -568,6 +585,13 @@ header h1 {
         width: 60px;
         height: 60px;
     }
+    #game-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    #missed-words-list {
+        font-size: 18px;
+    }
 }
 
 #game-controls {
@@ -575,4 +599,133 @@ header h1 {
     display: flex;
     justify-content: center;
     gap: 15px;
+}
+
+/* --- Celebration Animation --- */
+#celebration-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.sparkle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: var(--sunny-yellow);
+    border-radius: 50%;
+    animation: sparkle-animation 1s ease-out forwards;
+}
+
+@keyframes sparkle-animation {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+        top: -50px;
+    }
+}
+
+/* --- Rewards System --- */
+#reward-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--vibrant-green);
+    color: var(--pure-white);
+    padding: 15px 30px;
+    border-radius: 20px;
+    z-index: 200;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: fade-in-out 4s ease-in-out;
+}
+
+@keyframes fade-in-out {
+    0% { top: -100px; opacity: 0; }
+    20% { top: 20px; opacity: 1; }
+    80% { top: 20px; opacity: 1; }
+    100% { top: -100px; opacity: 0; }
+}
+
+#rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 20px;
+    max-width: 600px;
+    margin: 30px auto;
+}
+
+.reward-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid #ddd;
+}
+
+.reward-item .reward-icon {
+    font-size: 48px;
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
+.reward-item.unlocked .reward-icon {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.reward-item .reward-name {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#view-rewards-btn {
+    background-color: var(--bright-blue);
+}
+
+#back-to-results-btn {
+    background-color: var(--practice-orange);
+}
+
+#game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+}
+
+#home-btn {
+    padding: 8px 15px;
+    font-size: 18px;
+    background-color: var(--practice-orange);
+    color: var(--pure-white);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
 } 
